@@ -555,7 +555,7 @@ abstract class AssetPickerBuilderDelegate<Asset, Path> {
         tooltip: MaterialLocalizations.of(context).backButtonTooltip,
         icon: const Icon(
           Icons.close,
-          color: lightColor,
+          color: darkColor,
         ),
       ),
     );
@@ -1535,7 +1535,7 @@ class DefaultAssetPickerBuilderDelegate
                 : textDelegate.confirm,
             style: TextStyle(
               color: p.isSelectedNotEmpty
-                  ? theme.textTheme.bodyText1?.color
+                  ? lightColor
                   : theme.textTheme.caption?.color,
               fontSize: 17,
               fontWeight: FontWeight.normal,
@@ -1668,7 +1668,8 @@ class DefaultAssetPickerBuilderDelegate
                     maxHeight:
                     context.mediaQuery.size.height * (isAppleOS ? .6 : .8),
                   ),
-                  color: theme.colorScheme.background,
+                  // color: theme.colorScheme.background,
+                  color: lightColor,
                   child: child,
                 ),
               ),
@@ -1757,7 +1758,7 @@ class DefaultAssetPickerBuilderDelegate
           style: const TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.normal,
-            color: lightColor,
+            color: darkColor,
           ),
           maxLines: 1,
           overflow: TextOverflow.fade,
@@ -2047,7 +2048,7 @@ class DefaultAssetPickerBuilderDelegate
                     p.selectedAssets.isNotEmpty);
         if (isDisabled) {
           return Container(
-            color: theme.colorScheme.background.withOpacity(.85),
+            color: darkColor.withOpacity(.6),
           );
         }
         return const SizedBox.shrink();
@@ -2128,7 +2129,7 @@ class DefaultAssetPickerBuilderDelegate
               duration: switchingPathDuration,
               padding: EdgeInsets.all(indicatorSize * .35),
               color: selected
-                  ? theme.colorScheme.primary.withOpacity(.45)
+                  ? darkColor.withOpacity(.45)
                   : theme.backgroundColor.withOpacity(.1),
               child: selected && !isSingleAssetMode
                   ? Align(

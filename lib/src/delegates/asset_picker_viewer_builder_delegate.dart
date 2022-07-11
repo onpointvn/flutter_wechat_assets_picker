@@ -541,7 +541,8 @@ class DefaultAssetPickerViewerBuilderDelegate
 
   @override
   Widget bottomDetailBuilder(BuildContext context) {
-    final Color _backgroundColor = themeData.primaryColor.withOpacity(.9);
+    // final Color _backgroundColor = themeData.primaryColor.withOpacity(.9);
+    final Color _backgroundColor = Colors.white.withOpacity(0.9);
     return ValueListenableBuilder2<bool, int>(
       firstNotifier: isDisplayingDetail,
       secondNotifier: selectedNotifier,
@@ -580,7 +581,7 @@ class DefaultAssetPickerViewerBuilderDelegate
             Container(
               height: bottomBarHeight + context.bottomPadding,
               padding: const EdgeInsets.symmetric(horizontal: 20.0)
-                  .copyWith(bottom: context.bottomPadding),
+                  .copyWith(bottom: context.bottomPadding + 8),
               decoration: BoxDecoration(
                 border: Border(
                   top: BorderSide(
@@ -837,8 +838,8 @@ class DefaultAssetPickerViewerBuilderDelegate
                 }
                 return textDelegate.confirm;
               }(),
-              style: TextStyle(
-                color: themeData.textTheme.bodyText1?.color,
+              style: const TextStyle(
+                color: Colors.white,
                 fontSize: 17,
                 fontWeight: FontWeight.normal,
               ),
