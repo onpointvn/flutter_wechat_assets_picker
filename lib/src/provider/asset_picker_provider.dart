@@ -21,13 +21,13 @@ import '../internal/singleton.dart';
 /// and how to get the thumbnail data of a path.
 abstract class AssetPickerProvider<Asset, Path> extends ChangeNotifier {
   AssetPickerProvider({
-    this.maxAssets = 9,
-    this.pageSize = 320,
+    this.maxAssets = defaultMaxAssetsCount,
+    this.pageSize = defaultAssetsPerPage,
     this.pathThumbnailSize = defaultPathThumbnailSize,
     List<Asset>? selectedAssets,
   }) {
-    if (selectedAssets?.isNotEmpty == true) {
-      _selectedAssets = List<Asset>.from(selectedAssets!);
+    if (selectedAssets != null && selectedAssets.isNotEmpty) {
+      _selectedAssets = selectedAssets.toList();
     }
   }
 
@@ -172,7 +172,7 @@ abstract class AssetPickerProvider<Asset, Path> extends ChangeNotifier {
     if (value == _currentAssets) {
       return;
     }
-    _currentAssets = List<Asset>.from(value);
+    _currentAssets = value.toList();
     notifyListeners();
   }
 
@@ -185,7 +185,7 @@ abstract class AssetPickerProvider<Asset, Path> extends ChangeNotifier {
     if (value == _selectedAssets) {
       return;
     }
-    _selectedAssets = List<Asset>.from(value);
+    _selectedAssets = value.toList();
     notifyListeners();
   }
 
@@ -212,36 +212,31 @@ abstract class AssetPickerProvider<Asset, Path> extends ChangeNotifier {
     if (selectedAssets.length == maxAssets || selectedAssets.contains(item)) {
       return;
     }
-    final List<Asset> _set = List<Asset>.from(selectedAssets);
-    _set.add(item);
-    selectedAssets = _set;
+    final List<Asset> set = selectedAssets.toList();
+    set.add(item);
+    selectedAssets = set;
   }
 
   /// Un-select asset.
   /// 取消选中资源
   void unSelectAsset(Asset item) {
-    final List<Asset> _set = List<Asset>.from(selectedAssets);
-    _set.remove(item);
-    selectedAssets = _set;
+    final List<Asset> set = selectedAssets.toList();
+    set.remove(item);
+    selectedAssets = set;
   }
 }
 
 class DefaultAssetPickerProvider
     extends AssetPickerProvider<AssetEntity, AssetPathEntity> {
   DefaultAssetPickerProvider({
-    List<AssetEntity>? selectedAssets,
+    super.selectedAssets,
+    super.maxAssets,
+    super.pageSize,
+    super.pathThumbnailSize,
     this.requestType = RequestType.image,
     this.sortPathDelegate = SortPathDelegate.common,
     this.filterOptions,
-    int maxAssets = 9,
-    int pageSize = 80,
-    ThumbnailSize pathThumbnailSize = const ThumbnailSize.square(80),
-  }) : super(
-          maxAssets: maxAssets,
-          pageSize: pageSize,
-          pathThumbnailSize: pathThumbnailSize,
-          selectedAssets: selectedAssets,
-        ) {
+  }) {
     Singleton.sortPathDelegate = sortPathDelegate ?? SortPathDelegate.common;
     // Call [getAssetList] with route duration when constructing.
     Future<void>(() async {
@@ -252,19 +247,14 @@ class DefaultAssetPickerProvider
 
   @visibleForTesting
   DefaultAssetPickerProvider.forTest({
-    List<AssetEntity>? selectedAssets,
+    super.selectedAssets,
     this.requestType = RequestType.image,
     this.sortPathDelegate = SortPathDelegate.common,
     this.filterOptions,
-    int maxAssets = 9,
-    int pageSize = 80,
-    ThumbnailSize pathThumbnailSize = const ThumbnailSize.square(80),
-  }) : super(
-          maxAssets: maxAssets,
-          pageSize: pageSize,
-          pathThumbnailSize: pathThumbnailSize,
-          selectedAssets: selectedAssets,
-        ) {
+    super.maxAssets,
+    super.pageSize = 80,
+    super.pathThumbnailSize,
+  }) {
     Singleton.sortPathDelegate = sortPathDelegate ?? SortPathDelegate.common;
   }
 
@@ -328,15 +318,15 @@ class DefaultAssetPickerProvider
       options.merge(filterOptions!);
     }
 
-    final List<AssetPathEntity> _list = await PhotoManager.getAssetPathList(
+    final List<AssetPathEntity> list = await PhotoManager.getAssetPathList(
       type: requestType,
       filterOption: options,
     );
 
     // Sort path using sort path delegate.
-    Singleton.sortPathDelegate.sort(_list);
+    Singleton.sortPathDelegate.sort(list);
 
-    for (final AssetPathEntity pathEntity in _list) {
+    for (final AssetPathEntity pathEntity in list) {
       // Use sync method to avoid unnecessary wait.
       _pathsList[pathEntity] = null;
       getThumbnailFromPath(pathEntity);
@@ -354,7 +344,7 @@ class DefaultAssetPickerProvider
       page: page,
       size: pageSize,
     );
-    _currentAssets = List<AssetEntity>.of(list);
+    _currentAssets = list.toList();
     _hasAssetsToDisplay = currentAssets.isNotEmpty;
     notifyListeners();
   }
@@ -365,7 +355,7 @@ class DefaultAssetPickerProvider
       page: currentAssetsListPage,
       size: pageSize,
     );
-    final List<AssetEntity> assets = List<AssetEntity>.of(list);
+    final List<AssetEntity> assets = list.toList();
     if (assets.isNotEmpty && currentAssets.contains(assets[0])) {
       return;
     }
